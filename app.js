@@ -16,28 +16,8 @@ const products = {
     "Isopropanol, puriss.,p.a., >99,8% (2,5l)" : [1, 0.05]
 }
 
-
-
-
-
-
-var usePerRun = 10;
-var perPakage = 786;
 var currentMode;
 const outputDecimals = 1;
-
-const firstInputHeadingText = $(".FirstInputLabel")[0];
-const firstInputMetricsTexts = [$(".FirstInputMetrics1")[0], $(".FirstInputMetrics2")[0]];
-const secondInputHeadingText = $(".SecondInputLabel")[0];
-const secondInputMetricsTexts = [$(".SecondInputMetrics1")[0], $(".SecondInputMetrics2")[0]];
-const headOutputTypeText = $(".HeadOutputType")[0];
-const bodyOutputHeadingText = $(".BodyOutputHeadingText")[0];
-const bodyOutputTypesTexts = [$(".BodyOutputType1")[0], $(".BodyOutputType2")[0], $(".BodyOutputType3")[0]];
-
-const firstInputs = [$(".FirstInput1")[0], $(".FirstInput2")[0]];
-const secondInputs = [$(".SecondInput1")[0], $(".SecondInput2")[0]];
-const headOutputValueText = $(".HeadOutputValue")[0];
-const bodyOutputValueTexts = [$(".BodyOutputValue1")[0], $(".BodyOutputValue2")[0], $(".BodyOutputValue3")[0]]
 
 class Mode{
     constructor(){
@@ -164,17 +144,28 @@ function OnSecondInput2Changed(e){
     SetMultiplePageTexts([headOutputValueText, bodyOutputValueTexts[0], bodyOutputValueTexts[1], bodyOutputValueTexts[2]], outputValues);
 }
 
-firstInputs[0].addEventListener("input", OnFirstInput1Changed);
-firstInputs[0].addEventListener("propertychange", OnFirstInput1Changed);
-firstInputs[1].addEventListener("input", OnFirstInput2Changed);
-firstInputs[1].addEventListener("propertychange", OnFirstInput2Changed);
-secondInputs[0].addEventListener("input", OnSecondInput1Changed);
-secondInputs[0].addEventListener("propertychange", OnSecondInput1Changed);
-secondInputs[1].addEventListener("input", OnSecondInput2Changed);
-secondInputs[1].addEventListener("propertychange", OnSecondInput2Changed);
+function InitProducts(){
+    let productIndex = 0;
+    let ItemContainer = $(".ItemContainer")[0];
+    for(product in products){
+        ItemContainerClone = ItemContainer.cloneNode(true);
+        ItemContainerClone.id = String(productIndex);
+        $("#" + String(productIndex) + " .ItemName").innerHTML = product;
+        
+        document.body.appendChild(ItemContainerClone);
+        productIndex ++;
+    }
+}
 
 
 function InitializeMode(modeToInit){
+    let productIndex = 0;
+    for(product in products){
+
+    }
+
+
+
     SetPageText(firstInputHeadingText, modeToInit.firstInputHeading);
     SetMultiplePageTexts(firstInputMetricsTexts, modeToInit.firstInputMetrics, true);
     SetPageText(secondInputHeadingText, modeToInit.secondInputHeading);
@@ -186,6 +177,8 @@ function InitializeMode(modeToInit){
     SetParentVisibility(headOutputTypeText, modeToInit.headOutputType)
     SetParentVisibility(firstInputHeadingText, modeToInit.firstInputHeading != null);
     SetParentVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
+
+    productIndex ++;
 }
 
 function SetPageText(element, text, isLabel = false){    
@@ -214,6 +207,47 @@ function SetParentVisibility(parentElement, setVisible){
     }
 }
 
+function AddListenerToAll(elements, action, listener, subElementIndex = null){
+    if(subElementIndex != null){
+        for (var i = 0; i < elements[subElementIndex].length; i++) {
+            elements[subElementIndex][i].addEventListener(action, listener);
+        }
+    }
+    else{
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].addEventListener(action, listener);
+        }
+    }
+}
+
+//////////////////////////////////
+//Main starts here
+//////////////////////////////////
+
 currentMode = StockDepNeededMode;
+
+InitProducts();
+
+const firstInputHeadingText = $(".FirstInputLabel");
+const firstInputMetricsTexts = [$(".FirstInputMetrics1"), $(".FirstInputMetrics2")];
+const secondInputHeadingText = $(".SecondInputLabel");
+const secondInputMetricsTexts = [$(".SecondInputMetrics1"), $(".SecondInputMetrics2")];
+const headOutputTypeText = $(".HeadOutputType");
+const bodyOutputHeadingText = $(".BodyOutputHeadingText");
+const bodyOutputTypesTexts = [$(".BodyOutputType1"), $(".BodyOutputType2"), $(".BodyOutputType3")];
+
+const firstInputs = [$(".FirstInput1"), $(".FirstInput2")];
+const secondInputs = [$(".SecondInput1"), $(".SecondInput2")];
+const headOutputValueText = $(".HeadOutputValue");
+const bodyOutputValueTexts = [$(".BodyOutputValue1"), $(".BodyOutputValue2"), $(".BodyOutputValue3")]
+
+AddListenerToAll(firstInputs, "input", OnFirstInput1Changed, 0);
+AddListenerToAll(firstInputs, "propertychange", OnFirstInput1Changed, 0);
+AddListenerToAll(firstInputs, "input", OnFirstInput2Changed, 1);
+AddListenerToAll(firstInputs, "propertychange", OnFirstInput2Changed, 1);
+AddListenerToAll(secondInputs, "input", OnSecondInput1Changed, 0);
+AddListenerToAll(secondInputs, "propertychange", OnSecondInput1Changed, 0);
+AddListenerToAll(secondInputs, "input", OnSecondInput2Changed, 1);
+AddListenerToAll(secondInputs, "propertychange", OnSecondInput2Changed, 1);
 
 InitializeMode(currentMode);
