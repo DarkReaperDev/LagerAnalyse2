@@ -41,8 +41,9 @@ StockReachMode.firstInputMetrics = ["Stück", "Pakete"];
 StockReachMode.headOutputType = "Läufe verbleibend"
 StockReachMode.bodyOutputHeading = "Recht bei"
 StockReachMode.bodyOutputTypes = ["22 Läufen pro Woche für:", "20 Läufen pro Woche für:", "17 Läufen pro Woche für:"]
-StockReachMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2){
+StockReachMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     //parts / per run
+    let usePerRun = products[productName][1];
     let remainingRuns = firstInput1.value / usePerRun;
     let remainingWeeksHigh = firstInput1.value / (usePerRun * 22);
     let remainingWeeksMedium = firstInput1.value / (usePerRun * 20);
@@ -52,7 +53,8 @@ StockReachMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1,
      remainingWeeksMedium.toFixed(outputDecimals) + " Wochen",
      remainingWeeksLow.toFixed(outputDecimals) + " Wochen"];
 }
-StockReachMode.firstInputConversionFunc = function(input, isReverse){
+StockReachMode.firstInputConversionFunc = function(input, isReverse, productName){
+    let perPakage = products[productName][0];
     if(isReverse){
         return input * perPakage;
     }else{
@@ -65,8 +67,10 @@ NeededMode.firstInputHeading = "Bedarf für:";
 NeededMode.firstInputMetrics = ["Tage", "Wochen"];
 NeededMode.bodyOutputHeading = "Benötigt bei"
 NeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
-NeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2){
+NeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     //per run * runs * weeks
+    let usePerRun = products[productName][1];
+    let perPakage = products[productName][0];
     let neededPartsHigh = firstInput2.value * usePerRun * 22;
     let neededPartsMedium = firstInput2.value * usePerRun * 20;
     let neededPartsLow = firstInput2.value * usePerRun * 17;
@@ -78,7 +82,7 @@ NeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, sec
      neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete",
      neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete"];
 }
-NeededMode.firstInputConversionFunc = function(input, isReverse){
+NeededMode.firstInputConversionFunc = function(input, isReverse, productName){
     if(isReverse){
         return input * 7;
     }else{
@@ -93,7 +97,9 @@ StockDepNeededMode.secondInputHeading = "Vorrat soll reichen für:";
 StockDepNeededMode.secondInputMetrics = ["Tage", "Wochen"];
 StockDepNeededMode.bodyOutputHeading = "Es fehlen bei:"
 StockDepNeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
-StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2){
+StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
+    let usePerRun = products[productName][1];
+    let perPakage = products[productName][0];
     let neededPartsHigh = secondInput2.value * usePerRun * 22 - firstInput1.value;
     let neededPartsMedium = secondInput2.value * usePerRun * 20 - firstInput1.value;
     let neededPartsLow = secondInput2.value * usePerRun * 17 - firstInput1.value;
@@ -105,7 +111,8 @@ StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInp
      neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete",
      neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete"];
 }
-StockDepNeededMode.firstInputConversionFunc = function(input, isReverse){
+StockDepNeededMode.firstInputConversionFunc = function(input, isReverse, productName){
+    let perPakage = products[productName][0];
     if(isReverse){
         return input * perPakage;
     }else{
@@ -121,27 +128,32 @@ StockDepNeededMode.secondInputConversionFunc = function(input, isReverse){
 }
 
 function OnFirstInput1Changed(e){
-    firstInputs[1].value = currentMode.firstInputConversionFunc(firstInputs[0].value, false)
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0], firstInputs[1], secondInputs[0], secondInputs[1]);
-    SetMultiplePageTexts([headOutputValueText, bodyOutputValueTexts[0], bodyOutputValueTexts[1], bodyOutputValueTexts[2]], outputValues);
+    let productId = parseInt(e.target.id.replace("FirstInput1", ""));
+    firstInputs[1][productId].value = currentMode.firstInputConversionFunc(firstInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    console.log(outputValues);
+    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function OnFirstInput2Changed(e){
-    firstInputs[0].value = currentMode.firstInputConversionFunc(firstInputs[1].value, true)
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0], firstInputs[1], secondInputs[0], secondInputs[1]);
-    SetMultiplePageTexts([headOutputValueText, bodyOutputValueTexts[0], bodyOutputValueTexts[1], bodyOutputValueTexts[2]], outputValues);
+    let productId = parseInt(e.target.id.replace("FirstInput2", ""));
+    firstInputs[0][productId].value = currentMode.firstInputConversionFunc(firstInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function OnSecondInput1Changed(e){
-    firstInputs[1].value = currentMode.secondInputConversionFunc(firstInputs[0].value, false)
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0], firstInputs[1], secondInputs[0], secondInputs[1]);
-    SetMultiplePageTexts([headOutputValueText, bodyOutputValueTexts[0], bodyOutputValueTexts[1], bodyOutputValueTexts[2]], outputValues);
+    let productId = parseInt(e.target.id.replace("SecondInput1", ""));
+    secondInputs[1][productId].value = currentMode.secondInputConversionFunc(secondInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function OnSecondInput2Changed(e){
-    firstInputs[0].value = currentMode.secondInputConversionFunc(firstInputs[1].value, true)
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0], firstInputs[1], secondInputs[0], secondInputs[1]);
-    SetMultiplePageTexts([headOutputValueText, bodyOutputValueTexts[0], bodyOutputValueTexts[1], bodyOutputValueTexts[2]], outputValues);
+    let productId = parseInt(e.target.id.replace("SecondInput2", ""));
+    secondInputs[0][productId].value = currentMode.secondInputConversionFunc(secondInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function InitProducts(){
@@ -149,12 +161,15 @@ function InitProducts(){
     let ItemContainer = $(".ItemContainer")[0];
     ItemContainer.parentNode.removeChild(ItemContainer);
     for(product in products){
-        console.log(product);
         ItemContainerClone = ItemContainer.cloneNode(true);
         ItemContainerClone.id = String(productIndex);        
         document.body.appendChild(ItemContainerClone);
-
+        
         $("#" + String(productIndex) + " .ItemName")[0].innerHTML = product;
+        $("#" + String(productIndex) + " .FirstInput1")[0].id = "FirstInput1" + String(productIndex);
+        $("#" + String(productIndex) + " .FirstInput2")[0].id = "FirstInput2" + String(productIndex);
+        $("#" + String(productIndex) + " .SecondInput1")[0].id = "SecondInput1" + String(productIndex);
+        $("#" + String(productIndex) + " .SecondInput2")[0].id = "SecondInput2" + String(productIndex);
         productIndex ++;
     }
 }
@@ -174,15 +189,27 @@ function InitializeMode(modeToInit){
     SetMultipleParentsVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
 }
 
-function SetPageText(elements, text, isLabel = false){    
-    for(let i = 0; i < elements.length; i++){
+function SetPageText(elements, text, isLabel = false){ 
+    let length = elements.length;
+    if(length == undefined){
         if(text != null){
             if(isLabel){
-                elements[i].childNodes[1].nodeValue = text;
+                elements.childNodes[1].nodeValue = text;
             }else{
-                elements[i].innerHTML = text;
+                elements.innerHTML = text;
             }
         } 
+    }
+    else{ 
+        for(let i = 0; i < length; i++){
+            if(text != null){
+                if(isLabel){
+                    elements[i].childNodes[1].nodeValue = text;
+                }else{
+                    elements[i].innerHTML = text;
+                }
+            } 
+        }
     }
 }
 
