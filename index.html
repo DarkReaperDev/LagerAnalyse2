@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lager Analyse</title>
+    <link rel="stylesheet" href="app.css">
+    <link rel="stylesheet" href="bootstrap.css">
+    <script src="jquery-3.5.1.min.js"></script>
+</head>
+<body>
+  
+    <div id="ModiButtons" class="my-3 ml-5">
+        <button class="ModusButton" id="StockReachModeButton">Reichweite Lagerbestand</button>
+        <button class="ModusButton" id="NeededModeButton">Bedarfsermittlung</button>
+        <button class="ModusButton" id="StockDepNeededButton">Bestandsabhängige Bedarfsermittlung</button>
+    </div>
+    <div class="ItemContainer container mx-5 row">
+        <div class="InputContainer col-7">
+            <h1 class="ItemName">Pipettierspitzen 8x96 Spitzen für GenoXtract 96</h1>
+            <div class="row Inputs">
+                <div class="FirstInput col-6">
+                    <h5 class="FirstInputLabel">ajdfkl</h5>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="col-6 FirstInputMetrics1"><Input type="text" onClick="this.select();" class="FirstInput1"></Input>Stück</label>
+                            <label class="col-6 FirstInputMetrics2"><Input type="text" onClick="this.select();" class="FirstInput2"></Input>Pakete</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="SecondInput col-6">
+                    <h5 class="SecondInputLabel">Vorrat soll reichen für</h5>
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label class="col-6 SecondInputMetrics1"><Input type="text" onClick="this.select();" class="SecondInput1"></Input>Stück</label>
+                            <label class="col-6 SecondInputMetrics2"><Input type="text" onClick="this.select();" class="SecondInput2"></Input>Pakete</label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="OutputContainer col-5">
+            <div class="OutputHeader row">
+                <h4 class="OutputType HeadOutputType col-6">Läufe verbleibend</h4>
+                <p class="OutputValue HeadOutputValue col-6">value</p>
+            </div>
+            <div class="OutputBody">
+                <div class="row">
+                    <h5 class="col BodyOutputHeadingText">Reicht bei</h5>
+                </div>
+                <div class="row">
+                    <p class="OutputType BodyOutputType1 col-6">17 Läufen pro Woche:</p>
+                    <p class="OutputValue BodyOutputValue1 col-6">value</p>
+                </div>
+                <div class="row">
+                    <p class="OutputType BodyOutputType2 col-6">14 Läufen pro Woche:</p>
+                    <p class="OutputValue col-6 BodyOutputValue2">value</p>
+                </div>
+                <div class="row">
+                    <p class="OutputType BodyOutputType3 col-6">12 Läufen pro Woche:</p>
+                    <p class="OutputValue col-6 BodyOutputValue3">value</p>
+                </div>
+            </div>
+        </div>
+    </div>    
+    <script src="app.js"></script>
+</body>
+</html>
