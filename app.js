@@ -147,25 +147,20 @@ function OnSecondInput2Changed(e){
 function InitProducts(){
     let productIndex = 0;
     let ItemContainer = $(".ItemContainer")[0];
+    ItemContainer.parentNode.removeChild(ItemContainer);
     for(product in products){
+        console.log(product);
         ItemContainerClone = ItemContainer.cloneNode(true);
-        ItemContainerClone.id = String(productIndex);
-        $("#" + String(productIndex) + " .ItemName").innerHTML = product;
-        
+        ItemContainerClone.id = String(productIndex);        
         document.body.appendChild(ItemContainerClone);
+
+        $("#" + String(productIndex) + " .ItemName")[0].innerHTML = product;
         productIndex ++;
     }
 }
 
 
 function InitializeMode(modeToInit){
-    let productIndex = 0;
-    for(product in products){
-
-    }
-
-
-
     SetPageText(firstInputHeadingText, modeToInit.firstInputHeading);
     SetMultiplePageTexts(firstInputMetricsTexts, modeToInit.firstInputMetrics, true);
     SetPageText(secondInputHeadingText, modeToInit.secondInputHeading);
@@ -174,21 +169,21 @@ function InitializeMode(modeToInit){
     SetPageText(bodyOutputHeadingText, modeToInit.bodyOutputHeading);
     SetMultiplePageTexts(bodyOutputTypesTexts, modeToInit.bodyOutputTypes);
 
-    SetParentVisibility(headOutputTypeText, modeToInit.headOutputType)
-    SetParentVisibility(firstInputHeadingText, modeToInit.firstInputHeading != null);
-    SetParentVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
-
-    productIndex ++;
+    SetMultipleParentsVisibility(headOutputTypeText, modeToInit.headOutputType != null)
+    SetMultipleParentsVisibility(firstInputHeadingText, modeToInit.firstInputHeading != null);
+    SetMultipleParentsVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
 }
 
-function SetPageText(element, text, isLabel = false){    
-    if(text != null){
-        if(isLabel){
-            element.childNodes[1].nodeValue = text;
-        }else{
-            element.innerHTML = text;
-        }
-    } 
+function SetPageText(elements, text, isLabel = false){    
+    for(let i = 0; i < elements.length; i++){
+        if(text != null){
+            if(isLabel){
+                elements[i].childNodes[1].nodeValue = text;
+            }else{
+                elements[i].innerHTML = text;
+            }
+        } 
+    }
 }
 
 function SetMultiplePageTexts(elements, texts, areLabels = false){
@@ -204,6 +199,12 @@ function SetParentVisibility(parentElement, setVisible){
         parentElement.parentElement.style.display = "inline";
     }else{
         parentElement.parentElement.style.display = "none";
+    }
+}
+
+function SetMultipleParentsVisibility(parentElements, setVisibel){
+    for(let i = 0; i < parentElements.length; i++){
+        SetParentVisibility(parentElements[i], setVisibel);
     }
 }
 
