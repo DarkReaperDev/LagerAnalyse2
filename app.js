@@ -13,7 +13,7 @@ const products = {
     "Virus Transp. Med. (200ml)" : [6, 0.72],
     "FluoroType SARS-CoV-2 plus 96er Tests" : [1, 1],
     "Universal Internal Control 2, 960 Tests" : [1, 0.08],
-    "Isopropanol, puriss.,p.a., >99,8% (2,5l)" : [1, 0.05]
+    "Isopropanol, puriss.,p.a., mehr als 99,8% (2,5l)" : [1, 0.05]
 }
 
 var currentMode;
@@ -132,50 +132,56 @@ StockDepNeededMode.secondInputConversionFunc = function(input, isReverse){
 }
 
 function OnFirstInput1Changed(e){
-    let productId = parseInt(e.target.id.replace("FirstInput1", ""));
-    let convertedValue = currentMode.firstInputConversionFunc(firstInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    if(currentMode.linkFirstInput){
-        ChangeAllInputsbyClass("FirstInput1", e.target.value);
-        ChangeAllInputsbyClass("FirstInput2", convertedValue);
-    }
-    firstInputs[1][productId].value = convertedValue;
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    console.log(outputValues);
-    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
+    InputChanged(e.target, "FirstInput1", "FirstInput2", true);
 }
 
 function OnFirstInput2Changed(e){
-    let productId = parseInt(e.target.id.replace("FirstInput2", ""));
-    let convertedValue = currentMode.firstInputConversionFunc(firstInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    if(currentMode.linkFirstInput){
-        ChangeAllInputsbyClass("FirstInput2", e.target.value);
-        ChangeAllInputsbyClass("FirstInput1", convertedValue);
-    }
-    firstInputs[0][productId].value = convertedValue;
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
+    InputChanged(e.target, "FirstInput2", "FirstInput1", true);
 }
 
 function OnSecondInput1Changed(e){
-    let productId = parseInt(e.target.id.replace("SecondInput1", ""));
-    let convertedValue = currentMode.secondInputConversionFunc(secondInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    if(currentMode.linkSecondInput){
-        ChangeAllInputsbyClass("SecondInput1", e.target.value);
-        ChangeAllInputsbyClass("SecondInput2", convertedValue);
-    }
-    secondInputs[1][productId].value = convertedValue;
-    let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
+    InputChanged(e.target, "SecondInput1", "SecondInput2", false);
 }
 
 function OnSecondInput2Changed(e){
-    let productId = parseInt(e.target.id.replace("SecondInput2", ""));
-    let convertedValue = currentMode.secondInputConversionFunc(secondInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML);
-    if(currentMode.linkSecondInput){
-        ChangeAllInputsbyClass("SecondInput2", e.target.value);
-        ChangeAllInputsbyClass("SecondInput1", convertedValue);
+    InputChanged(e.target, "SecondInput2", "SecondInput1", false);
+    
+}
+
+function InputChanged(input, inputClass, oppInputClass, isFirstInput){
+    let productId = parseInt(input.id.replace(inputClass, ""));
+    let productName = $("#" + String(productId) + " .ItemName")[0].innerHTML;
+    let outputFunc = currentMode.outputFunc;
+    let convertedValue = GetConversionFunc(isFirstInput)(input.value, !isFirstInput, productName);
+
+    $("#" + String(productId) + " ." + oppInputClass)[0].value = convertedValue;
+    ExecuteLinks(inputClass, oppInputClass, input.value, convertedValue, isFirstInput);
+
+    CalcOutput(input, inputClass);    
+}
+
+function GetConversionFunc(isFirstInput){
+    if(isFirstInput){
+        return currentMode.firstInputConversionFunc;
+    }else{
+        return currentMode.secondInputConversionFunc;
     }
-    secondInputs[0][productId].value = convertedValue;
+}
+
+function ExecuteLinks(inputClass, oppInputClass, inputValue, oppInputValue, isFirstInput){
+    if((currentMode.linkFirstInput && isFirstInput) || (currentMode.linkSecondInput && !isFirstInput)){
+        ChangeAllInputsbyClass(inputClass, inputValue);
+        ChangeAllInputsbyClass(oppInputClass, oppInputValue);
+        let inputs = $("." + inputClass);
+        for(let i = 0; i < inputs.length; i++){
+            CalcOutput(inputs[i], inputClass);
+        }
+    }
+}
+
+function CalcOutput(input, inputClass){
+    let productId = parseInt(input.id.replace(inputClass, ""));
+    console.log($("#" + String(productId) + " .ItemName")[0].innerHTML)
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
