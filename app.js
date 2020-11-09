@@ -32,6 +32,8 @@ class Mode{
         this.firstInputConversionFunc = null;
         this.secondInputConversionFunc = null;
         this.calcOutputFunc = null;
+        this.linkFirstInput = false;
+        this.linkSecondInput = false;
     }
 }
 
@@ -67,6 +69,7 @@ NeededMode.firstInputHeading = "Bedarf für:";
 NeededMode.firstInputMetrics = ["Tage", "Wochen"];
 NeededMode.bodyOutputHeading = "Benötigt bei"
 NeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
+NeededMode.linkFirstInput = true;
 NeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     //per run * runs * weeks
     let usePerRun = products[productName][1];
@@ -97,6 +100,7 @@ StockDepNeededMode.secondInputHeading = "Vorrat soll reichen für:";
 StockDepNeededMode.secondInputMetrics = ["Tage", "Wochen"];
 StockDepNeededMode.bodyOutputHeading = "Es fehlen bei:"
 StockDepNeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
+StockDepNeededMode.linkSecondInput = true;
 StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     let usePerRun = products[productName][1];
     let perPakage = products[productName][0];
@@ -129,7 +133,12 @@ StockDepNeededMode.secondInputConversionFunc = function(input, isReverse){
 
 function OnFirstInput1Changed(e){
     let productId = parseInt(e.target.id.replace("FirstInput1", ""));
-    firstInputs[1][productId].value = currentMode.firstInputConversionFunc(firstInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let convertedValue = currentMode.firstInputConversionFunc(firstInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    if(currentMode.linkFirstInput){
+        ChangeAllInputsbyClass("FirstInput1", e.target.value);
+        ChangeAllInputsbyClass("FirstInput2", convertedValue);
+    }
+    firstInputs[1][productId].value = convertedValue;
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     console.log(outputValues);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
@@ -137,21 +146,36 @@ function OnFirstInput1Changed(e){
 
 function OnFirstInput2Changed(e){
     let productId = parseInt(e.target.id.replace("FirstInput2", ""));
-    firstInputs[0][productId].value = currentMode.firstInputConversionFunc(firstInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let convertedValue = currentMode.firstInputConversionFunc(firstInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    if(currentMode.linkFirstInput){
+        ChangeAllInputsbyClass("FirstInput2", e.target.value);
+        ChangeAllInputsbyClass("FirstInput1", convertedValue);
+    }
+    firstInputs[0][productId].value = convertedValue;
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function OnSecondInput1Changed(e){
     let productId = parseInt(e.target.id.replace("SecondInput1", ""));
-    secondInputs[1][productId].value = currentMode.secondInputConversionFunc(secondInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let convertedValue = currentMode.secondInputConversionFunc(secondInputs[0][productId].value, false, $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    if(currentMode.linkSecondInput){
+        ChangeAllInputsbyClass("SecondInput1", e.target.value);
+        ChangeAllInputsbyClass("SecondInput2", convertedValue);
+    }
+    secondInputs[1][productId].value = convertedValue;
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
 function OnSecondInput2Changed(e){
     let productId = parseInt(e.target.id.replace("SecondInput2", ""));
-    secondInputs[0][productId].value = currentMode.secondInputConversionFunc(secondInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML)
+    let convertedValue = currentMode.secondInputConversionFunc(secondInputs[1][productId].value, true, $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    if(currentMode.linkSecondInput){
+        ChangeAllInputsbyClass("SecondInput2", e.target.value);
+        ChangeAllInputsbyClass("SecondInput1", convertedValue);
+    }
+    secondInputs[0][productId].value = convertedValue;
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
@@ -245,6 +269,15 @@ function AddListenerToAll(elements, action, listener, subElementIndex = null){
         for (var i = 0; i < elements.length; i++) {
             elements[i].addEventListener(action, listener);
         }
+    }
+}
+
+function ChangeAllInputsbyClass(inputClass, valueToSet){
+    let productId = 0;
+    for(product in products){
+        console.log(valueToSet);
+        $("#" + String(productId) + " ." + inputClass)[0].value = valueToSet;
+        productId ++;
     }
 }
 
