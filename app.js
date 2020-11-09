@@ -1,15 +1,15 @@
 const products = {
     "GXT96 X3 Extraction Kit, 960 Proben" : [1, 0.1],
     "Pipettierspitzen, 1 Paket =  8x96 Spitzen " : [768, 824],
-    "Vorratsbehälter 100 ml, Eppendorf" : [5, 4],
-    "Vorratsbehälter 30 ml, Eppendorf" : [5, 2],
+    "Vorratsbehälter 100 ml, Eppendorf" : [50, 4],
+    "Vorratsbehälter 30 ml, Eppendorf" : [50, 2],
     "Deepwell-Platte 2,2 ml (Prozessplatte)" : [50, 1],
     "X100 Platte u96 PP Neutral (Eluatplatte)" : [100, 1],
     "Abfallbeutel autoklavierbar bedruckt Biohazard" : [200, 1],
     "96-Well PCR Platte, Barcode weiße Wells (50 Stück)" : [50, 1],
     "Clear Weld Heatsealer Schweißfolie, PCR Platte" : [100, 1],
     "Folie für PCR Platten (Lagerungsfolie, Metall)" : [100, 1],
-    "monovette Urin gelb 10ml (512/Karton)" : [64, 95],
+    "monovette Urin gelb 10ml (512/Karton)" : [512, 95],
     "Virus Transp. Med. (200ml)" : [6, 0.72],
     "FluoroType SARS-CoV-2 plus 96er Tests" : [1, 1],
     "Universal Internal Control 2, 960 Tests" : [1, 0.08],
@@ -104,12 +104,12 @@ StockDepNeededMode.linkSecondInput = true;
 StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     let usePerRun = products[productName][1];
     let perPakage = products[productName][0];
-    let neededPartsHigh = secondInput2.value * usePerRun * 22 - firstInput1.value;
-    let neededPartsMedium = secondInput2.value * usePerRun * 20 - firstInput1.value;
-    let neededPartsLow = secondInput2.value * usePerRun * 17 - firstInput1.value;
-    let neededPacksHigh = neededPartsHigh / perPakage;
-    let neededPacksMedium = neededPartsMedium / perPakage;
-    let neededPacksLow = neededPartsLow / perPakage;
+    let neededPartsHigh = KeepAbove0(secondInput2.value * usePerRun * 22 - firstInput1.value);
+    let neededPartsMedium = KeepAbove0(secondInput2.value * usePerRun * 20 - firstInput1.value);
+    let neededPartsLow = KeepAbove0(secondInput2.value * usePerRun * 17 - firstInput1.value);
+    let neededPacksHigh = KeepAbove0(neededPartsHigh / perPakage);
+    let neededPacksMedium = KeepAbove0(neededPartsMedium / perPakage);
+    let neededPacksLow = KeepAbove0(neededPartsLow / perPakage);
     return [null,
      neededPartsHigh.toFixed(outputDecimals) + " Stück/ " + neededPacksHigh.toFixed(outputDecimals) + " Pakete",
      neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete",
@@ -131,28 +131,32 @@ StockDepNeededMode.secondInputConversionFunc = function(input, isReverse){
     }
 }
 
+function KeepAbove0(value){
+    if(value < 0){return 0;}
+    else{return value;}
+}
+
 function OnFirstInput1Changed(e){
-    InputChanged(e.target, "FirstInput1", "FirstInput2", true);
+    InputChanged(e.target, "FirstInput1", "FirstInput2", true, true);
 }
 
 function OnFirstInput2Changed(e){
-    InputChanged(e.target, "FirstInput2", "FirstInput1", true);
+    InputChanged(e.target, "FirstInput2", "FirstInput1", true, false);
 }
 
 function OnSecondInput1Changed(e){
-    InputChanged(e.target, "SecondInput1", "SecondInput2", false);
+    InputChanged(e.target, "SecondInput1", "SecondInput2", false, true);
 }
 
 function OnSecondInput2Changed(e){
-    InputChanged(e.target, "SecondInput2", "SecondInput1", false);
+    InputChanged(e.target, "SecondInput2", "SecondInput1", false, false);
     
 }
 
-function InputChanged(input, inputClass, oppInputClass, isFirstInput){
+function InputChanged(input, inputClass, oppInputClass, isFirstInput, isInput1){
     let productId = parseInt(input.id.replace(inputClass, ""));
     let productName = $("#" + String(productId) + " .ItemName")[0].innerHTML;
-    let outputFunc = currentMode.outputFunc;
-    let convertedValue = GetConversionFunc(isFirstInput)(input.value, !isFirstInput, productName);
+    let convertedValue = GetConversionFunc(isFirstInput)(input.value, !isInput1, productName);
 
     $("#" + String(productId) + " ." + oppInputClass)[0].value = convertedValue;
     ExecuteLinks(inputClass, oppInputClass, input.value, convertedValue, isFirstInput);
@@ -183,7 +187,15 @@ function CalcOutput(input, inputClass){
     let productId = parseInt(input.id.replace(inputClass, ""));
     console.log($("#" + String(productId) + " .ItemName")[0].innerHTML)
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
+    outputValues = ReplaceDecimalIndicatorOnOutput(outputValues);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
+}
+
+function ReplaceDecimalIndicatorOnOutput(outputValues){
+    for(let i = 0; i < outputValues.length; i++){
+        outputValues[i] = outputValues[i].replace(".", ",");
+    }
+    return outputValues;
 }
 
 function InitProducts(){
@@ -204,7 +216,6 @@ function InitProducts(){
     }
 }
 
-
 function InitializeMode(modeToInit){
     SetPageText(firstInputHeadingText, modeToInit.firstInputHeading);
     SetMultiplePageTexts(firstInputMetricsTexts, modeToInit.firstInputMetrics, true);
@@ -213,13 +224,18 @@ function InitializeMode(modeToInit){
     SetPageText(headOutputTypeText, modeToInit.headOutputType);
     SetPageText(bodyOutputHeadingText, modeToInit.bodyOutputHeading);
     SetMultiplePageTexts(bodyOutputTypesTexts, modeToInit.bodyOutputTypes);
-
+    
     SetMultipleParentsVisibility(headOutputTypeText, modeToInit.headOutputType != null)
     SetMultipleParentsVisibility(firstInputHeadingText, modeToInit.firstInputHeading != null);
     SetMultipleParentsVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
 }
 
-function SetPageText(elements, text, isLabel = false){ 
+function ChangeMode(newMode){
+    currentMode = newMode;
+    InitializeMode(currentMode);
+}
+
+function SetPageText(elements, text, isLabel = false){
     let length = elements.length;
     if(length == undefined){
         if(text != null){
@@ -281,7 +297,6 @@ function AddListenerToAll(elements, action, listener, subElementIndex = null){
 function ChangeAllInputsbyClass(inputClass, valueToSet){
     let productId = 0;
     for(product in products){
-        console.log(valueToSet);
         $("#" + String(productId) + " ." + inputClass)[0].value = valueToSet;
         productId ++;
     }
@@ -291,7 +306,9 @@ function ChangeAllInputsbyClass(inputClass, valueToSet){
 //Main starts here
 //////////////////////////////////
 
-currentMode = StockDepNeededMode;
+currentMode = StockReachMode;
+$("#StockReachModeButton")[0].style.backgroundColor = "#BDBDBD";
+
 
 InitProducts();
 
@@ -316,5 +333,26 @@ AddListenerToAll(secondInputs, "input", OnSecondInput1Changed, 0);
 AddListenerToAll(secondInputs, "propertychange", OnSecondInput1Changed, 0);
 AddListenerToAll(secondInputs, "input", OnSecondInput2Changed, 1);
 AddListenerToAll(secondInputs, "propertychange", OnSecondInput2Changed, 1);
+
+$("#StockReachModeButton")[0].addEventListener("click", function(e){
+    ChangeMode(StockReachMode);
+    e.target.style.backgroundColor = "#BDBDBD";
+    $("#NeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+    $("#StockDepNeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+});
+
+$("#NeededModeButton")[0].addEventListener("click", function(e){
+    ChangeMode(NeededMode);
+    e.target.style.backgroundColor = "#BDBDBD";
+    $("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
+    $("#StockDepNeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+});
+
+$("#StockDepNeededModeButton")[0].addEventListener("click", function(e){
+    ChangeMode(StockDepNeededMode);
+    e.target.style.backgroundColor = "#BDBDBD";
+    $("#NeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+    $("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
+});
 
 InitializeMode(currentMode);
