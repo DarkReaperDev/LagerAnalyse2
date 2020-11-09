@@ -40,8 +40,10 @@ body h5{
     margin-right: 0.5em;
 }
 
-.form-group label{
+.form-inline .form-group label{
     padding-left: 0;
+    text-align: left;
+    justify-content: left;
 }
 
 .OutputContainer .OutputHeader, .OutputContainer .OutputBody{
@@ -50,6 +52,10 @@ body h5{
 
 .OutputHeader h4, .OutputHeader p{
     font-size: 1.2em;
+}
+
+.OutputHeader .OutputValue{
+    line-height: 1.2;
 }
 
 .OutputBody .OutputType, .OutputBody .OutputValue{

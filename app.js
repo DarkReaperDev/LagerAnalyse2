@@ -66,7 +66,7 @@ StockReachMode.firstInputConversionFunc = function(input, isReverse, productName
 
 var NeededMode = new Mode();
 NeededMode.firstInputHeading = "Bedarf für:";
-NeededMode.firstInputMetrics = ["Tage", "Wochen"];
+NeededMode.firstInputMetrics = ["Tage ", "Wochen"];
 NeededMode.bodyOutputHeading = "Benötigt bei"
 NeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
 NeededMode.linkFirstInput = true;
@@ -269,7 +269,7 @@ function SetMultiplePageTexts(elements, texts, areLabels = false){
 
 function SetParentVisibility(parentElement, setVisible){
     if(setVisible){
-        parentElement.parentElement.style.display = "inline";
+        parentElement.parentElement.style.display = "";
     }else{
         parentElement.parentElement.style.display = "none";
     }
