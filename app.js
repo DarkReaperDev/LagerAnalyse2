@@ -16,6 +16,11 @@ const products = {
     "Isopropanol, puriss.,p.a., mehr als 99,8% (2,5l)" : [1, 0.05]
 }
 
+const saveValues = {
+    "Stock" : [[], []],
+    "Time"  : [[], []]
+}
+
 var currentMode;
 const outputDecimals = 1;
 
@@ -34,6 +39,8 @@ class Mode{
         this.calcOutputFunc = null;
         this.linkFirstInput = false;
         this.linkSecondInput = false;
+        this.firstInputType = null;
+        this.secondInputType = null;
     }
 }
 
@@ -43,6 +50,7 @@ StockReachMode.firstInputMetrics = ["Stück", "Pakete"];
 StockReachMode.headOutputType = "Läufe verbleibend"
 StockReachMode.bodyOutputHeading = "Recht bei"
 StockReachMode.bodyOutputTypes = ["22 Läufen pro Woche für:", "20 Läufen pro Woche für:", "17 Läufen pro Woche für:"]
+StockReachMode.firstInputType = "Stock";
 StockReachMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     //parts / per run
     let usePerRun = products[productName][1];
@@ -70,6 +78,7 @@ NeededMode.firstInputMetrics = ["Tage ", "Wochen"];
 NeededMode.bodyOutputHeading = "Benötigt bei"
 NeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
 NeededMode.linkFirstInput = true;
+NeededMode.firstInputType = "Time";
 NeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     //per run * runs * weeks
     let usePerRun = products[productName][1];
@@ -101,6 +110,8 @@ StockDepNeededMode.secondInputMetrics = ["Tage", "Wochen"];
 StockDepNeededMode.bodyOutputHeading = "Es fehlen bei:"
 StockDepNeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"]
 StockDepNeededMode.linkSecondInput = true;
+StockDepNeededMode.firstInputType = "Stock";
+StockDepNeededMode.secondInputType = "Time";
 StockDepNeededMode.calcOutputFunc = function(firstInput1, firstInput2, secondInput1, secondInput2, productName){
     let usePerRun = products[productName][1];
     let perPakage = products[productName][0];
@@ -185,7 +196,6 @@ function ExecuteLinks(inputClass, oppInputClass, inputValue, oppInputValue, isFi
 
 function CalcOutput(input, inputClass){
     let productId = parseInt(input.id.replace(inputClass, ""));
-    console.log($("#" + String(productId) + " .ItemName")[0].innerHTML)
     let outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
     outputValues = ReplaceDecimalIndicatorOnOutput(outputValues);
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
@@ -193,7 +203,9 @@ function CalcOutput(input, inputClass){
 
 function ReplaceDecimalIndicatorOnOutput(outputValues){
     for(let i = 0; i < outputValues.length; i++){
-        outputValues[i] = outputValues[i].replace(".", ",");
+        if(outputValues[i] != null){
+            outputValues[i] = outputValues[i].replace(".", ",");
+        }
     }
     return outputValues;
 }
@@ -217,6 +229,8 @@ function InitProducts(){
 }
 
 function InitializeMode(modeToInit){
+    
+
     SetPageText(firstInputHeadingText, modeToInit.firstInputHeading);
     SetMultiplePageTexts(firstInputMetricsTexts, modeToInit.firstInputMetrics, true);
     SetPageText(secondInputHeadingText, modeToInit.secondInputHeading);
@@ -228,9 +242,54 @@ function InitializeMode(modeToInit){
     SetMultipleParentsVisibility(headOutputTypeText, modeToInit.headOutputType != null)
     SetMultipleParentsVisibility(firstInputHeadingText, modeToInit.firstInputHeading != null);
     SetMultipleParentsVisibility(secondInputHeadingText, modeToInit.secondInputHeading != null);
+
+    ChangeAllInputsbyClass("FirstInput1", "");
+    ChangeAllInputsbyClass("FirstInput2", "");
+    ChangeAllInputsbyClass("SecondInput1", "");
+    ChangeAllInputsbyClass("SecondInput2", "");
+
+    LoadValues(currentMode.firstInputType, "FirstInput1", "FirstInput2");
+    LoadValues(currentMode.secondInputType, "SecondInput1", "SecondInput2");
+
+}
+
+
+function SaveValues(inputType, input1Class, input2Class){
+    if(inputType == null){
+        return;
+    }
+    let index = 0;
+        for(product in products){
+            let value1 = $("#" + String(index) + " ." + input1Class)[0].value;
+            let value2 = $("#" + String(index) + " ." + input2Class)[0].value;
+
+            saveValues[inputType][0][index] = value1;
+            saveValues[inputType][1][index] = value2;
+
+            index ++;
+        }
+}
+
+
+function LoadValues(inputType, input1Class, input2Class){
+    if(inputType == null){
+        return;
+    }
+    let index = 0;
+        for(product in products){
+            let value1 = saveValues[inputType][0][index];
+            let value2 = saveValues[inputType][1][index];
+
+            $("#" + String(index) + " ." + input1Class)[0].value = value1;
+            $("#" + String(index) + " ." + input2Class)[0].value = value2;
+
+            index ++;
+        }
 }
 
 function ChangeMode(newMode){
+    SaveValues(currentMode.firstInputType, "FirstInput1", "FirstInput2");
+    SaveValues(currentMode.secondInputType, "SecondInput1", "SecondInput2");
     currentMode = newMode;
     InitializeMode(currentMode);
 }
@@ -355,4 +414,11 @@ $("#StockDepNeededModeButton")[0].addEventListener("click", function(e){
     $("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
 });
 
+ChangeAllInputsbyClass("FirstInput1", "");
+ChangeAllInputsbyClass("FirstInput2", "");
+ChangeAllInputsbyClass("SecondInput1", "");
+ChangeAllInputsbyClass("SecondInput2", "");
+
+SaveValues("Stock", "FirstInput1", "FirstInput2");
+SaveValues("Time", "SecondInput1", "SecondInput2");
 InitializeMode(currentMode);
