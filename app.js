@@ -375,7 +375,8 @@ function ChangeAllInputsbyClass(inputClass, valueToSet){
 //////////////////////////////////
 
 currentMode = StockReachMode;
-$("#StockReachModeButton")[0].style.backgroundColor = "#BDBDBD";
+$("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
+$("#StockReachModeButton")[0].style.color = "white";
 
 
 InitProducts();
@@ -404,23 +405,32 @@ AddListenerToAll(secondInputs, "propertychange", OnSecondInput2Changed, 1);
 
 $("#StockReachModeButton")[0].addEventListener("click", function(e){
     ChangeMode(StockReachMode);
-    e.target.style.backgroundColor = "#BDBDBD";
-    $("#NeededModeButton")[0].style.backgroundColor = "#6C6C6C";
-    $("#StockDepNeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+    e.target.style.backgroundColor = "#6C6C6C";
+    e.target.style.color = "white";
+    $("#NeededModeButton")[0].style.backgroundColor = "white";
+    $("#StockDepNeededModeButton")[0].style.backgroundColor = "white";
+    $("#NeededModeButton")[0].style.color = "#707070";
+    $("#StockDepNeededModeButton")[0].style.color = "#707070";
 });
 
 $("#NeededModeButton")[0].addEventListener("click", function(e){
     ChangeMode(NeededMode);
-    e.target.style.backgroundColor = "#BDBDBD";
-    $("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
-    $("#StockDepNeededModeButton")[0].style.backgroundColor = "#6C6C6C";
+    e.target.style.backgroundColor = "#6C6C6C";
+    e.target.style.color = "white";
+    $("#StockReachModeButton")[0].style.backgroundColor = "white";
+    $("#StockDepNeededModeButton")[0].style.backgroundColor = "white";
+    $("#StockReachModeButton")[0].style.color = "#707070";
+    $("#StockDepNeededModeButton")[0].style.color = "#707070";
 });
 
 $("#StockDepNeededModeButton")[0].addEventListener("click", function(e){
     ChangeMode(StockDepNeededMode);
-    e.target.style.backgroundColor = "#BDBDBD";
-    $("#NeededModeButton")[0].style.backgroundColor = "#6C6C6C";
-    $("#StockReachModeButton")[0].style.backgroundColor = "#6C6C6C";
+    e.target.style.backgroundColor = "#6C6C6C";
+    e.target.style.color = "white";
+    $("#NeededModeButton")[0].style.backgroundColor = "white";
+    $("#StockReachModeButton")[0].style.backgroundColor = "white";
+    $("#NeededModeButton")[0].style.color = "#707070";
+    $("#StockReachModeButton")[0].style.color = "#707070";
 });
 
 ChangeAllInputsbyClass("FirstInput1", "");
