@@ -1,6 +1,6 @@
 const products = {
     "GXT96 X3 Extraction Kit, 960 Proben" : [1, 0.1],
-    "Pipettierspitzen, 1 Paket =  8x96 Spitzen " : [768, 824],
+    "Pipettierspitzen, 1 Paket =  8x96 Spitzen " : [768, 768],
     "Vorratsbehälter 100 ml, Eppendorf" : [50, 4],
     "Vorratsbehälter 30 ml, Eppendorf" : [50, 2],
     "Deepwell-Platte 2,2 ml (Prozessplatte)" : [50, 1],
@@ -201,10 +201,18 @@ function CalcOutput(input, inputClass){
     SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
 }
 
+function CalcAllOutputs(){
+    let productIndex = 0;
+    for(product in products){
+        CalcOutput($("#" + String(productIndex) + " .FirstInput1")[0], "FirstInput1");
+        productIndex ++;
+    }
+}
+
 function ReplaceDecimalIndicatorOnOutput(outputValues){
     for(let i = 0; i < outputValues.length; i++){
         if(outputValues[i] != null){
-            outputValues[i] = outputValues[i].replace(".", ",");
+            outputValues[i] = outputValues[i].replaceAll(".", ",");
         }
     }
     return outputValues;
@@ -251,6 +259,7 @@ function InitializeMode(modeToInit){
     LoadValues(currentMode.firstInputType, "FirstInput1", "FirstInput2");
     LoadValues(currentMode.secondInputType, "SecondInput1", "SecondInput2");
 
+    CalcAllOutputs();
 }
 
 
@@ -291,7 +300,7 @@ function ChangeMode(newMode){
     SaveValues(currentMode.firstInputType, "FirstInput1", "FirstInput2");
     SaveValues(currentMode.secondInputType, "SecondInput1", "SecondInput2");
     currentMode = newMode;
-    InitializeMode(currentMode);
+    InitializeMode(currentMode);    
 }
 
 function SetPageText(elements, text, isLabel = false){
