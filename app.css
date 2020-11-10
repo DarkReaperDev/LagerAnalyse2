@@ -35,6 +35,11 @@ body h5{
     border-right: 1px solid #707070;
 }
 
+.Inputs{
+    position: absolute;
+    bottom: 0;
+}
+
 .InputContainer input{
     width: 3em;
     margin-right: 0.5em;
