@@ -43,12 +43,17 @@ body h5{
 .InputContainer input{
     width: 3em;
     margin-right: 0.5em;
+    padding-left: 0;
 }
 
-.form-inline .form-group label{
+.form-inline label{
     padding-left: 0;
     text-align: left;
     justify-content: left;
+}
+
+.Inputs div{
+    padding-left: 0;
 }
 
 .OutputContainer .OutputHeader, .OutputContainer .OutputBody{
