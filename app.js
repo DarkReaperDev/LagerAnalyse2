@@ -22,6 +22,11 @@ var saveValues = {
 var currentMode;
 var outputDecimals = 1;
 
+var runsVeryLow = 26;
+var runsLow = 31;
+var runsMedium = 36;
+var runsHigh = 41;
+
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
     throw new TypeError("Cannot call a class as a function");
@@ -52,17 +57,18 @@ StockReachMode.firstInputHeading = "Lagerbestand:";
 StockReachMode.firstInputMetrics = ["Stück", "Pakete"];
 StockReachMode.headOutputType = "Läufe verbleibend";
 StockReachMode.bodyOutputHeading = "Reicht bei";
-StockReachMode.bodyOutputTypes = ["22 Läufen pro Woche für:", "20 Läufen pro Woche für:", "17 Läufen pro Woche für:"];
+StockReachMode.bodyOutputTypes = ["41 Läufen pro Woche für:", "36 Läufen pro Woche für:", "31 Läufen pro Woche für:", "26 Läufen pro Woche für:"];
 StockReachMode.firstInputType = "Stock";
 
 StockReachMode.calcOutputFunc = function (firstInput1, firstInput2, secondInput1, secondInput2, productName) {
   //parts / per run
   var usePerRun = products[productName][1];
   var remainingRuns = firstInput1.value / usePerRun;
-  var remainingWeeksHigh = firstInput1.value / (usePerRun * 22);
-  var remainingWeeksMedium = firstInput1.value / (usePerRun * 20);
-  var remainingWeeksLow = firstInput1.value / (usePerRun * 17);
-  return [remainingRuns.toFixed(outputDecimals) + " Läufe", remainingWeeksHigh.toFixed(outputDecimals) + " Wochen", remainingWeeksMedium.toFixed(outputDecimals) + " Wochen", remainingWeeksLow.toFixed(outputDecimals) + " Wochen"];
+  var remainingWeeksHigh = firstInput1.value / (usePerRun * 41);
+  var remainingWeeksMedium = firstInput1.value / (usePerRun * 36);
+  var remainingWeeksLow = firstInput1.value / (usePerRun * 31);
+  var remainingWeeksVeryLow = firstInput1.value / (usePerRun * 26);
+  return [remainingRuns.toFixed(outputDecimals) + " Läufe", remainingWeeksHigh.toFixed(outputDecimals) + " Wochen", remainingWeeksMedium.toFixed(outputDecimals) + " Wochen", remainingWeeksLow.toFixed(outputDecimals) + " Wochen", remainingWeeksVeryLow.toFixed(outputDecimals) + " Wochen"];
 };
 
 StockReachMode.firstInputConversionFunc = function (input, isReverse, productName) {
@@ -79,7 +85,7 @@ var NeededMode = new Mode();
 NeededMode.firstInputHeading = "Bedarf für:";
 NeededMode.firstInputMetrics = ["Tage ", "Wochen"];
 NeededMode.bodyOutputHeading = "Benötigt bei";
-NeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"];
+NeededMode.bodyOutputTypes = ["41 Läufen pro Woche für:", "36 Läufen pro Woche für:", "31 Läufen pro Woche für:", "26 Läufen pro Woche für:"];
 NeededMode.linkFirstInput = true;
 NeededMode.firstInputType = "Time";
 
@@ -87,13 +93,15 @@ NeededMode.calcOutputFunc = function (firstInput1, firstInput2, secondInput1, se
   //per run * runs * weeks
   var usePerRun = products[productName][1];
   var perPakage = products[productName][0];
-  var neededPartsHigh = firstInput2.value * usePerRun * 22;
-  var neededPartsMedium = firstInput2.value * usePerRun * 20;
-  var neededPartsLow = firstInput2.value * usePerRun * 17;
+  var neededPartsHigh = firstInput2.value * usePerRun * 41;
+  var neededPartsMedium = firstInput2.value * usePerRun * 36;
+  var neededPartsLow = firstInput2.value * usePerRun * 31;
+  var neededPartsVeryLow = firstInput2.value * usePerRun * 26;
   var neededPacksHigh = neededPartsHigh / perPakage;
   var neededPacksMedium = neededPartsMedium / perPakage;
   var neededPacksLow = neededPartsLow / perPakage;
-  return [null, neededPartsHigh.toFixed(outputDecimals) + " Stück/ " + neededPacksHigh.toFixed(outputDecimals) + " Pakete", neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete", neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete"];
+  var neededPacksVeryLow = neededPartsVeryLow / perPakage;
+  return [null, neededPartsHigh.toFixed(outputDecimals) + " Stück/ " + neededPacksHigh.toFixed(outputDecimals) + " Pakete", neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete", neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete", neededPartsVeryLow.toFixed(outputDecimals) + " Stück/ " + neededPacksVeryLow.toFixed(outputDecimals) + " Pakete"];
 };
 
 NeededMode.firstInputConversionFunc = function (input, isReverse, productName) {
@@ -110,7 +118,7 @@ StockDepNeededMode.firstInputMetrics = ["Stück", "Pakete"];
 StockDepNeededMode.secondInputHeading = "Vorrat soll reichen für:";
 StockDepNeededMode.secondInputMetrics = ["Tage", "Wochen"];
 StockDepNeededMode.bodyOutputHeading = "Es fehlen bei:";
-StockDepNeededMode.bodyOutputTypes = ["22 Läufen pro Woche:", "20 Läufen pro Woche:", "17 Läufen pro Woche:"];
+StockDepNeededMode.bodyOutputTypes = ["41 Läufen pro Woche für:", "36 Läufen pro Woche für:", "31 Läufen pro Woche für:", "26 Läufen pro Woche für:"];
 StockDepNeededMode.linkSecondInput = true;
 StockDepNeededMode.firstInputType = "Stock";
 StockDepNeededMode.secondInputType = "Time";
@@ -118,13 +126,15 @@ StockDepNeededMode.secondInputType = "Time";
 StockDepNeededMode.calcOutputFunc = function (firstInput1, firstInput2, secondInput1, secondInput2, productName) {
   var usePerRun = products[productName][1];
   var perPakage = products[productName][0];
-  var neededPartsHigh = KeepAbove0(secondInput2.value * usePerRun * 22 - firstInput1.value);
-  var neededPartsMedium = KeepAbove0(secondInput2.value * usePerRun * 20 - firstInput1.value);
-  var neededPartsLow = KeepAbove0(secondInput2.value * usePerRun * 17 - firstInput1.value);
+  var neededPartsHigh = KeepAbove0(secondInput2.value * usePerRun * 41 - firstInput1.value);
+  var neededPartsMedium = KeepAbove0(secondInput2.value * usePerRun * 36 - firstInput1.value);
+  var neededPartsLow = KeepAbove0(secondInput2.value * usePerRun * 31 - firstInput1.value);
+  var neededPartsVeryLow = KeepAbove0(secondInput2.value * usePerRun * 26 - firstInput1.value);
   var neededPacksHigh = KeepAbove0(neededPartsHigh / perPakage);
   var neededPacksMedium = KeepAbove0(neededPartsMedium / perPakage);
   var neededPacksLow = KeepAbove0(neededPartsLow / perPakage);
-  return [null, neededPartsHigh.toFixed(outputDecimals) + " Stück/ " + neededPacksHigh.toFixed(outputDecimals) + " Pakete", neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete", neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete"];
+  var neededPacksVeryLow = KeepAbove0(neededPartsVeryLow / perPakage);
+  return [null, neededPartsHigh.toFixed(outputDecimals) + " Stück/ " + neededPacksHigh.toFixed(outputDecimals) + " Pakete", neededPartsMedium.toFixed(outputDecimals) + " Stück/ " + neededPacksMedium.toFixed(outputDecimals) + " Pakete", neededPartsLow.toFixed(outputDecimals) + " Stück/ " + neededPacksLow.toFixed(outputDecimals) + " Pakete", neededPartsVeryLow.toFixed(outputDecimals) + " Stück/ " + neededPacksVeryLow.toFixed(outputDecimals) + " Pakete"];
 };
 
 StockDepNeededMode.firstInputConversionFunc = function (input, isReverse, productName) {
@@ -203,7 +213,7 @@ function CalcOutput(input, inputClass) {
   console.log(productId);
   var outputValues = currentMode.calcOutputFunc(firstInputs[0][productId], firstInputs[1][productId], secondInputs[0][productId], secondInputs[1][productId], $("#" + String(productId) + " .ItemName")[0].innerHTML);
   outputValues = ReplaceDecimalIndicatorOnOutput(outputValues);
-  SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId]], outputValues);
+  SetMultiplePageTexts([headOutputValueText[productId], bodyOutputValueTexts[0][productId], bodyOutputValueTexts[1][productId], bodyOutputValueTexts[2][productId], bodyOutputValueTexts[3][productId]], outputValues);
 }
 
 function CalcAllOutputs() {
@@ -407,7 +417,7 @@ var bodyOutputTypesTexts = [$(".BodyOutputType1"), $(".BodyOutputType2"), $(".Bo
 var firstInputs = [$(".FirstInput1"), $(".FirstInput2")];
 var secondInputs = [$(".SecondInput1"), $(".SecondInput2")];
 var headOutputValueText = $(".HeadOutputValue");
-var bodyOutputValueTexts = [$(".BodyOutputValue1"), $(".BodyOutputValue2"), $(".BodyOutputValue3")];
+var bodyOutputValueTexts = [$(".BodyOutputValue1"), $(".BodyOutputValue2"), $(".BodyOutputValue3"), $(".BodyOutputValue4")];
 AddListenerToAll(firstInputs, "input", OnFirstInput1Changed, 0);
 AddListenerToAll(firstInputs, "propertychange", OnFirstInput1Changed, 0);
 AddListenerToAll(firstInputs, "input", OnFirstInput2Changed, 1);
