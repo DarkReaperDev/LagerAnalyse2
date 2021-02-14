@@ -2,21 +2,18 @@
 //https://babeljs.io/
 
 var products = {
-  "GXT96 X3 Extraction Kit, 960 Proben": [1, 0.1],
-  "Pipettierspitzen, 1 Paket =  8x96 Spitzen ": [768, 768],
-  "Vorratsbehälter 100 ml, Eppendorf": [50, 4],
-  "Vorratsbehälter 30 ml, Eppendorf": [50, 2],
-  "Deepwell-Platte 2,2 ml (Prozessplatte)": [50, 1],
-  "X100 Platte u96 PP Neutral (Eluatplatte)": [100, 1],
-  "Abfallbeutel autoklavierbar bedruckt Biohazard": [200, 1],
-  "96-Well PCR Platte, Barcode weiße Wells (50 Stück)": [50, 1],
-  "Clear Weld Heatsealer Schweißfolie, PCR Platte": [100, 1],
-  "Folie für PCR Platten (Lagerungsfolie, Metall)": [100, 1],
-  "monovette Urin gelb 10ml (512/Karton)": [512, 95],
-  "Virus Transp. Med. (200ml)": [6, 0.72],
-  "FluoroType SARS-CoV-2 plus 96er Tests": [1, 1],
-  "Universal Internal Control 2, 960 Tests": [1, 0.08],
-  "Isopropanol, puriss.,p.a., mehr als 99,8% (2,5l)": [1, 0.05]
+  "Amplification Plate (32x96Tests)": [32*96, (32*96)/32],
+  "Processing Plate (32x48Tests)": [32*48, (32*48)/16],
+  "Pipette Tip rack (16x48Tests)": [768, 768/8],
+  "Magnetic Glass Particle (480Tests)": [480, 480/5],
+  "Lysis Reagent (4x875 ml)": [4, 4/12],
+  "Specimen Diluent (4x889 ml)": [4, 4/12],
+  "Wash Reagent (4x4200 ml)": [4, 4/3],
+  "Solid Waste Bag (20ST)": [20, 20/80],
+  "SARS-CoV-2 Test - 480 (5Läufe)": [480, 480/5],
+  "SARS-CoV-2 Test - 192 (2Läufe)": [192, 192/2],
+  "SARS-COV-2 RMC posKo (16Läufe)": [16, 1],
+  "Buffer Neg. Control Kit (16Läufe)": [16, 1]
 };
 var saveValues = {
   "Stock": [[], []],
