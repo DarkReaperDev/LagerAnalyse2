@@ -2,18 +2,18 @@
 //https://babeljs.io/
 
 var products = {
-  "Amplification Plate (32x96Tests)": [32*96, (32*96)/32],
-  "Processing Plate (32x48Tests)": [32*48, (32*48)/16],
-  "Pipette Tip rack (16x48Tests)": [768, 768/8],
-  "Magnetic Glass Particle (480Tests)": [480, 480/5],
+  "Amplification Plate (32x96Tests)": [32, 32/32],
+  "Processing Plate (32x48Tests)": [32, 32/16],
+  "Pipette Tip rack (16x48Tests)": [16, 16/8],
+  "Magnetic Glass Particle (480Tests)": [1, 1/5],
   "Lysis Reagent (4x875 ml)": [4, 4/12],
   "Specimen Diluent (4x889 ml)": [4, 4/12],
-  "Wash Reagent (4x4200 ml)": [4, 4/3],
+  "Wash Reagent (1x4200 ml)": [1, 1/3],
   "Solid Waste Bag (20ST)": [20, 20/80],
-  "SARS-CoV-2 Test - 480 (5Läufe)": [480, 480/5],
-  "SARS-CoV-2 Test - 192 (2Läufe)": [192, 192/2],
-  "SARS-COV-2 RMC posKo (16Läufe)": [16, 1],
-  "Buffer Neg. Control Kit (16Läufe)": [16, 1]
+  "SARS-CoV-2 Test - 480 (5Läufe)": [1, 1/5],
+  "SARS-CoV-2 Test - 192 (2Läufe)": [1, 1/2],
+  "SARS-COV-2 RMC posKo (16Läufe)": [1, 1/16],
+  "Buffer Neg. Control Kit (16Läufe)": [1, 1/16]
 };
 var saveValues = {
   "Stock": [[], []],
